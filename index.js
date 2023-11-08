@@ -8,7 +8,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
-// cors middleware
+// middlewares
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
@@ -32,7 +32,7 @@ const verifyJwt = async (req, res, next) => {
   });
 };
 
-// api validation
+// validation
 function validateJob(jobData) {
   if (
     jobData &&
@@ -67,7 +67,7 @@ const Job = client.db("job-portal-db").collection("job");
 
 async function run() {
   try {
-    // token generate
+    // generate token
     app.post("/jwt", async (req, res) => {
       const data = req.body;
       const token = jwt.sign(data, process.env.JWT_ACCESS_TOKEN, {
@@ -88,12 +88,10 @@ async function run() {
       res.clearCookie("token", { maxAge: 0 }).send({ success: true });
     });
 
-    // jobt post api
+    // post a job
     app.post("/job", async (req, res) => {
       const jobData = req.body;
       const isValidJob = validateJob(jobData);
-
-      // validation
 
       if (isValidJob) {
         const formatDeadline = new Date(jobData.deadline).toISOString();
@@ -116,7 +114,7 @@ async function run() {
       }
     });
 
-    // get jobs api
+    // get jobs
     app.get("/job", async (req, res) => {
       const queryObj = { ...req.query };
       const excludeQueries = ["page", "sort", "limit", "fields", "search"];
@@ -146,7 +144,7 @@ async function run() {
       });
     });
 
-    // get a job api
+    // get a job
     app.get("/job/:id", async (req, res) => {
       const id = req.params.id;
       const result = await Job.findOne({ _id: new ObjectId(id) });
@@ -173,7 +171,7 @@ async function run() {
       });
     });
 
-    // delete a job api
+    // delete a job
     app.delete("/job/:id", async (req, res) => {
       const id = req.params.id;
 
@@ -187,7 +185,7 @@ async function run() {
       });
     });
 
-    // get my jobs api
+    // get my jobs
     app.get("/me/job", verifyJwt, async (req, res) => {
       const email = req.query.email;
       const requestedEmail = req.user;
@@ -207,7 +205,7 @@ async function run() {
       }
     });
 
-    // update my job api
+    // update my job
     app.patch("/me/job/:id", verifyJwt, async (req, res) => {
       const id = req.params.id;
       const updatedData = req.body;
@@ -231,7 +229,7 @@ async function run() {
       }
     });
 
-    // delete my job api
+    // delete my job
     app.delete("/me/job/:id", verifyJwt, async (req, res) => {
       const id = req.params.id;
       const email = req.query.email;
@@ -252,7 +250,7 @@ async function run() {
       }
     });
 
-    // apply a job api
+    // apply a job
     app.patch("/applied-job/:id", verifyJwt, async (req, res) => {
       const email = req.body.email;
       const requestedEmail = req.user;
@@ -264,8 +262,6 @@ async function run() {
       const isAlreadyApplied = job.candidates.some(
         (candidate) => candidate.email === requestedEmail
       );
-
-      // validation
 
       if (isAlreadyApplied) {
         return res.status(409).json({
@@ -299,25 +295,34 @@ async function run() {
       }
     });
 
-    // get my applied jobs api
-    app.get("/applied-job/", verifyJwt, async (req, res) => {
-      const email = req.query.email;
+    // get my applied jobs
+    app.get("/applied-job/:email", verifyJwt, async (req, res) => {
+      const email = req.params.email;
       const requestedEmail = req.user;
 
       if (email === requestedEmail) {
+        const queryObj = { ...req.query };
+        const excludeQueries = ["page", "sort", "limit", "fields", "search"];
+        excludeQueries.forEach((el) => delete queryObj[el]);
+
+        if (req.query.search) {
+          queryObj["type"] = { $regex: req.query.search, $options: "i" };
+        }
+
         const projection = {
           candidates: 0,
         };
 
         const result = await Job.find({
           "candidates.email": email,
+          ...queryObj,
         })
           .project(projection)
           .toArray();
 
         res.status(200).json({
           success: true,
-          message: "Jobs applied retrieved successful",
+          message: "Jobs applied retrieved successfully",
           count: result.length,
           result,
         });
