@@ -173,7 +173,7 @@ async function run() {
       });
     });
 
-    // delete a job
+    // delete a job api
     app.delete("/job/:id", async (req, res) => {
       const id = req.params.id;
 
@@ -187,7 +187,7 @@ async function run() {
       });
     });
 
-    // get my jobs
+    // get my jobs api
     app.get("/me/job", verifyJwt, async (req, res) => {
       const email = req.query.email;
       const requestedEmail = req.user;
