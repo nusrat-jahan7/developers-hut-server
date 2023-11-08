@@ -207,7 +207,7 @@ async function run() {
       }
     });
 
-    // update my job
+    // update my job api
     app.patch("/me/job/:id", verifyJwt, async (req, res) => {
       const id = req.params.id;
       const updatedData = req.body;
