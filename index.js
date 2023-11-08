@@ -116,7 +116,7 @@ async function run() {
       }
     });
 
-    // get jobs
+    // get jobs api
     app.get("/job", async (req, res) => {
       const queryObj = { ...req.query };
       const excludeQueries = ["page", "sort", "limit", "fields", "search"];
@@ -146,7 +146,7 @@ async function run() {
       });
     });
 
-    // get a job
+    // get a job api
     app.get("/job/:id", async (req, res) => {
       const id = req.params.id;
       const result = await Job.findOne({ _id: new ObjectId(id) });
