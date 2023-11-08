@@ -8,7 +8,7 @@ const { MongoClient, ServerApiVersion, ObjectId } = require("mongodb");
 const app = express();
 const port = process.env.PORT || 5000;
 
-// middlewares
+// cors middleware
 app.use(
   cors({
     origin: ["http://localhost:5173", "http://localhost:5174"],
@@ -32,7 +32,7 @@ const verifyJwt = async (req, res, next) => {
   });
 };
 
-// validation
+// api validation
 function validateJob(jobData) {
   if (
     jobData &&
