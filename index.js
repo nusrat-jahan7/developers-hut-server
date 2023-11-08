@@ -67,7 +67,7 @@ const Job = client.db("job-portal-db").collection("job");
 
 async function run() {
   try {
-    // generate token
+    // token generate
     app.post("/jwt", async (req, res) => {
       const data = req.body;
       const token = jwt.sign(data, process.env.JWT_ACCESS_TOKEN, {
