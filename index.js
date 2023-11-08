@@ -299,7 +299,7 @@ async function run() {
       }
     });
 
-    // get my applied jobs
+    // get my applied jobs api
     app.get("/applied-job/", verifyJwt, async (req, res) => {
       const email = req.query.email;
       const requestedEmail = req.user;
