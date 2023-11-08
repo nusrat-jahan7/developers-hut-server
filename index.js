@@ -88,10 +88,12 @@ async function run() {
       res.clearCookie("token", { maxAge: 0 }).send({ success: true });
     });
 
-    // post a job
+    // jobt post api
     app.post("/job", async (req, res) => {
       const jobData = req.body;
       const isValidJob = validateJob(jobData);
+
+      // validation
 
       if (isValidJob) {
         const formatDeadline = new Date(jobData.deadline).toISOString();
