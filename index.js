@@ -265,6 +265,8 @@ async function run() {
         (candidate) => candidate.email === requestedEmail
       );
 
+      // validation
+
       if (isAlreadyApplied) {
         return res.status(409).json({
           success: false,
