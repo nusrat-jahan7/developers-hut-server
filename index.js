@@ -231,7 +231,7 @@ async function run() {
       }
     });
 
-    // delete my job
+    // delete my job api
     app.delete("/me/job/:id", verifyJwt, async (req, res) => {
       const id = req.params.id;
       const email = req.query.email;
@@ -252,7 +252,7 @@ async function run() {
       }
     });
 
-    // apply a job
+    // apply a job api
     app.patch("/applied-job/:id", verifyJwt, async (req, res) => {
       const email = req.body.email;
       const requestedEmail = req.user;
